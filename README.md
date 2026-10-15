@@ -9,6 +9,7 @@
 - 一鍵複製歌名，方便貼到聊天室點歌
 - 每首歌顯示唱過幾次與上次唱的日期
 - 懷舊部落格風格版面，側欄有標示今天（台灣時間）的日曆和分類列表
+- 側欄有網站主人大頭貼，以及可播放指定 YouTube 歌曲的懷舊風格播放器
 - 今日與總訪客人數：使用免費的 [Abacus](https://abacus.jasoncameron.dev) 計數服務，同一個瀏覽器同一天只算一次；本機預覽用另一組計數器，不會影響正式網站
 
 ## 更新歌單
@@ -26,6 +27,23 @@
 3. 提交並推送：`git add site/data/songs.json`、`git commit`、`git push`，GitHub 會自動跑測試並更新網站
 
 Excel 原始檔只留在本機（已加入 .gitignore），不會上傳到 GitHub。
+
+## 更換大頭貼與播放器歌曲
+
+設定都在 `site/data/settings.json`：
+
+```json
+{
+ "owner": { "name": "杏仁咪嚕", "avatar": "images/avatar.jpg" },
+ "player": [
+  { "title": "ドライフラワー", "url": "https://youtu.be/9rr2Oww94a8" }
+ ]
+}
+```
+
+- **換大頭貼**：把新圖片放到 `site/images/`（建議寬度 480 像素左右的 jpg，檔案不要太大），再把 `avatar` 改成新檔名；或直接用同樣的檔名覆蓋 `site/images/avatar.jpg`
+- **換播放器歌曲**：修改 `player` 裡的 `title`（播放器上方顯示的歌名）和 `url`（YouTube 網址，youtu.be 短網址或一般網址都可以）。放兩首以上會出現上一首／下一首按鈕，播完自動播下一首
+- 改完後提交並推送 `site/data/settings.json`（和新圖片），網站就會更新
 
 ## 本機預覽
 
@@ -45,4 +63,5 @@ python -m http.server 8000
 - `scripts/build_songs.py`：Excel 轉 JSON
 - `site/`：網頁本體（可直接部署到 GitHub Pages）
 - `site/data/songs.json`：由轉換程式產生，不要手動修改
+- `site/data/settings.json`：網站主人名稱、大頭貼、播放清單
 - `tests/`：測試

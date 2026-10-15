@@ -187,6 +187,80 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .tree-sub .tree-link::before { content: "‧"; }
 .tree-link[aria-pressed="true"] { text-decoration: underline; font-weight: bold; }
 
+/* ---------- 大頭貼 ---------- */
+.owner-avatar {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 1px solid var(--line);
+  background: #ffffff;
+  padding: 3px;
+}
+.owner-caption { margin: 4px 0 0; text-align: center; color: var(--pink); font-size: 11px; }
+
+/* ---------- 播放器 ---------- */
+.player { border: 1px solid var(--line); background: #ffffff; padding: 2px; }
+.player[hidden] { display: none; }
+
+.player-title {
+  padding: 1px 4px;
+  text-align: center;
+  font-size: 11px;
+  color: var(--pink);
+  background: linear-gradient(#ffffff, #ffe6ff);
+  border-bottom: 1px solid var(--line);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.player-screen {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  background: #1a0d1a;
+}
+.player-screen > :first-child,
+.player-screen iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+
+.player-big {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  margin: auto;
+  width: 44px;
+  height: 30px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: rgba(255, 204, 255, 0.92);
+  color: var(--pink);
+  font-size: 14px;
+  line-height: 1;
+}
+.player-big[hidden] { display: none; }
+
+.player-bar {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 3px;
+  background: linear-gradient(#ffe6ff, #ffccff);
+  border-top: 1px solid var(--line);
+  font-size: 10px;
+}
+.player-btn {
+  flex-shrink: 0;
+  border: 0;
+  background: none;
+  padding: 0 2px;
+  color: var(--pink);
+  font-size: 11px;
+  line-height: 1.4;
+}
+.player-time { flex-shrink: 0; font-family: "Courier New", monospace; color: var(--text); }
+.player-seek, .player-volume { min-width: 0; height: 12px; margin: 0; accent-color: var(--pink); }
+.player-seek { flex: 1 1 auto; }
+.player-volume { flex: 0 1 36px; }
+
 /* ---------- 提示 ---------- */
 .toast {
   position: fixed;
@@ -207,10 +281,17 @@ button { font: inherit; color: inherit; cursor: pointer; }
   .body-row { grid-template-columns: 1fr 210px; align-items: start; }
 }
 
-/* ---------- 手機：側欄移到歌單前，分類樹隱藏（上方已有分頁） ---------- */
+/* ---------- 手機：大頭貼、日曆、播放器都在歌單前，分類樹隱藏（上方已有分頁） ---------- */
 @media (max-width: 759px) {
-  .side { order: -1; }
+  .side { display: contents; }
+  .side-owner { order: -2; display: flex; align-items: center; gap: 10px; }
+  .side-owner[hidden] { display: none; }
+  .owner-avatar { width: 88px; }
+  .owner-caption { margin: 0; font-size: 12px; text-align: left; }
+  .side-calendar { order: -1; }
   .side-categories { display: none; }
+  .side-player { order: -1; max-width: 360px; width: 100%; margin: 0 auto 6px; }
   .calendar { max-width: 320px; margin: 0 auto; }
   .side-title { text-align: center; }
+  .visitors { letter-spacing: 0.04em; }
 }

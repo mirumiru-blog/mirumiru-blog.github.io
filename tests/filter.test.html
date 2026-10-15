@@ -15,6 +15,7 @@
     import { ALL, availableCategories, categoryTree, filterSongs, listLanguages, normalizeText, sungInfo } from "../site/filter.js";
     import { isoDate, monthGrid, shiftMonth, todayInTaipei } from "../site/calendar.js";
     import { countVisit, namespaceFor } from "../site/counter.js";
+    import { formatTime, parseYouTubeId, playlistFrom } from "../site/player.js";
 
     const song = (name, language, category) => ({ name, language, category, count: 0, lastSung: null });
     const songs = [
@@ -166,6 +167,53 @@
         const { fetchFn } = fakeCounter({ "day-2026-10-16": 1, total: 1 });
         const broken = { getItem() { throw new Error("blocked"); }, setItem() { throw new Error("blocked"); } };
         eq(await countVisit({ today: "2026-10-16", namespace: "ns", fetchFn, storage: broken }), { today: 1, total: 1 });
+      },
+
+      // ---------- 播放器 ----------
+      "各種 YouTube 網址都能取出影片 ID"() {
+        const id = "9rr2Oww94a8";
+        for (const url of [
+          "https://youtu.be/9rr2Oww94a8?si=eheN7IL6yK9_a3-s",
+          "https://www.youtube.com/watch?v=9rr2Oww94a8&t=30s",
+          "https://m.youtube.com/watch?v=9rr2Oww94a8",
+          "https://music.youtube.com/watch?v=9rr2Oww94a8",
+          "https://www.youtube.com/embed/9rr2Oww94a8",
+          "https://www.youtube.com/shorts/9rr2Oww94a8",
+          "https://www.youtube.com/live/9rr2Oww94a8?si=x",
+          " 9rr2Oww94a8 ",
+        ]) eq([url, parseYouTubeId(url)], [url, id]);
+      },
+      "不是 YouTube 的網址回傳 null"() {
+        for (const url of ["", null, "https://example.com/watch?v=9rr2Oww94a8", "https://youtu.be/", "不是網址", "https://www.youtube.com/watch?v=short"]) {
+          eq([url, parseYouTubeId(url)], [url, null]);
+        }
+      },
+      "播放清單略過錯誤網址、補上預設歌名"() {
+        eq(playlistFrom([
+          { title: " 平靜 ", url: "https://youtu.be/9rr2Oww94a8" },
+          { title: "壞掉的", url: "https://example.com" },
+          { url: "https://youtu.be/oH8g3NER6_k" },
+        ]), [
+          { title: "平靜", id: "9rr2Oww94a8" },
+          { title: "未命名歌曲", id: "oH8g3NER6_k" },
+        ]);
+        eq(playlistFrom(undefined), []);
+      },
+      "時間格式為 分:秒"() {
+        eq(formatTime(12), "00:12");
+        eq(formatTime(143.9), "02:23");
+        eq(formatTime(3723), "62:03");
+        eq(formatTime(NaN), "00:00");
+        eq(formatTime(-5), "00:00");
+      },
+
+      // ---------- 網站設定檔 ----------
+      async "settings.json 格式正確且大頭貼存在"() {
+        const settings = await (await fetch("../site/data/settings.json")).json();
+        eq(typeof settings.owner.name, "string");
+        const avatar = await fetch(`../site/${settings.owner.avatar}`, { method: "HEAD" });
+        eq(avatar.ok, true);
+        eq(playlistFrom(settings.player).length, settings.player.length);
       },
     };
 

@@ -1,6 +1,7 @@
 import { ALL, availableCategories, categoryTree, filterSongs, listLanguages, sungInfo } from "./filter.js";
 import { MONTH_NAMES, isoDate, monthGrid, shiftMonth, todayInTaipei } from "./calendar.js";
 import { countVisit } from "./counter.js";
+import { mountPlayer } from "./player.js";
 
 const $ = (id) => document.getElementById(id);
 const state = { query: "", language: ALL, category: ALL };
@@ -178,6 +179,25 @@ countVisit({ today: isoDate(today) }).then((counts) => {
   $("visitors-today").textContent = counts.today;
   $("visitors-total").textContent = counts.total;
 });
+
+// 網站設定（大頭貼、播放清單）：site/data/settings.json
+fetch("data/settings.json")
+  .then((r) => r.json())
+  .then(({ owner = {}, player = [] }) => {
+    const name = owner.name || "網站主人";
+    if (owner.avatar) {
+      $("owner-avatar").src = owner.avatar;
+      $("owner-avatar").alt = `本網站主人 ${name} 的照片`;
+    } else {
+      $("owner-avatar").hidden = true;
+    }
+    $("owner-caption").textContent = `本網站主人：${name} ♥`;
+    mountPlayer($("player"), player);
+  })
+  .catch(() => {
+    document.querySelector(".side-owner").hidden = true;
+    document.querySelector(".side-player").hidden = true;
+  });
 
 try {
   songs = await (await fetch("data/songs.json")).json();
