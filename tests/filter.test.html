@@ -123,9 +123,9 @@
       "有紀錄時顯示次數與上次日期"() {
         eq(sungInfo({ count: 3, lastSung: "2026-10-12" }), "唱過 3 次 · 上次 2026/10/12");
       },
-      "沒紀錄時顯示還沒唱過"() {
-        eq(sungInfo({ count: 0, lastSung: null }), "還沒唱過");
-        eq(sungInfo({}), "還沒唱過");
+      "沒紀錄時顯示 -"() {
+        eq(sungInfo({ count: 0, lastSung: null }), "-");
+        eq(sungInfo({}), "-");
       },
       "側欄分類樹含各語言與類別數量"() {
         eq(categoryTree(songs), [

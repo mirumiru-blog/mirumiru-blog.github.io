@@ -48,7 +48,7 @@ export function categoryTree(songs) {
 
 // 歌曲資訊文字，例如「唱過 3 次 · 上次 2026/10/12」
 export function sungInfo(song) {
-  if (!song.count || !song.lastSung) return "還沒唱過";
+  if (!song.count || !song.lastSung) return "-";
   return `唱過 ${song.count} 次 · 上次 ${song.lastSung.replaceAll("-", "/")}`;
 }
 
