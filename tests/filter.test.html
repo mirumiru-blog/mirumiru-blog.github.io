@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <title>filter.js 測試</title>
+  <style>
+    body { font-family: system-ui, sans-serif; padding: 16px; }
+    .pass { color: #1a7f37; } .fail { color: #cf222e; }
+  </style>
+</head>
+<body>
+  <h1 id="summary">執行中…</h1>
+  <ul id="results"></ul>
+  <script type="module">
+    import { ALL, availableCategories, filterSongs, listLanguages, normalizeText } from "../site/filter.js";
+
+    const songs = [
+      { name: "ドライフラワー", language: "日文", category: "JPOP", link: null },
+      { name: "残酷な天使のテーゼ", language: "日文", category: "動漫歌曲", link: null },
+      { name: "Just be friends", language: "日文", category: "V家", link: null },
+      { name: "楊丞琳- 理想情人", language: "中文", category: "中文", link: null },
+      { name: "黃妃- 追追追", language: "台語", category: "台語", link: null },
+    ];
+    const names = (list) => list.map((s) => s.name);
+
+    const tests = {
+      "空條件回傳全部"() {
+        eq(filterSongs(songs).length, 5);
+      },
+      "關鍵字比對歌名"() {
+        eq(names(filterSongs(songs, { query: "天使" })), ["残酷な天使のテーゼ"]);
+      },
+      "關鍵字比對歌手（歌名欄內）"() {
+        eq(names(filterSongs(songs, { query: "楊丞琳" })), ["楊丞琳- 理想情人"]);
+      },
+      "搜尋忽略大小寫與空白"() {
+        eq(names(filterSongs(songs, { query: "JUSTBE" })), ["Just be friends"]);
+      },
+      "全形英文可搜到半形"() {
+        eq(names(filterSongs(songs, { query: "ｊｕｓｔ" })), ["Just be friends"]);
+      },
+      "平假名可搜到片假名"() {
+        eq(names(filterSongs(songs, { query: "どらいふらわー" })), ["ドライフラワー"]);
+      },
+      "依語言篩選"() {
+        eq(names(filterSongs(songs, { language: "台語" })), ["黃妃- 追追追"]);
+      },
+      "語言加類別一起篩選"() {
+        eq(names(filterSongs(songs, { language: "日文", category: "V家" })), ["Just be friends"]);
+      },
+      "語言、類別與關鍵字同時套用"() {
+        eq(filterSongs(songs, { language: "日文", category: "JPOP", query: "天使" }).length, 0);
+      },
+      "找不到時回傳空陣列"() {
+        eq(filterSongs(songs, { query: "不存在的歌" }), []);
+      },
+      "語言清單依資料順序且不重複"() {
+        eq(listLanguages(songs), ["日文", "中文", "台語"]);
+      },
+      "類別只列出所選語言內的"() {
+        eq(availableCategories(songs, "日文"), ["JPOP", "動漫歌曲", "V家"]);
+      },
+      "和語言同名的類別不顯示"() {
+        eq(availableCategories(songs, "中文"), []);
+        eq(availableCategories(songs, ALL), ["JPOP", "動漫歌曲", "V家"]);
+      },
+      "normalizeText 處理空值"() {
+        eq(normalizeText(undefined), "");
+      },
+    };
+
+    function eq(actual, expected) {
+      const a = JSON.stringify(actual), e = JSON.stringify(expected);
+      if (a !== e) throw new Error(`預期 ${e}，實際 ${a}`);
+    }
+
+    let failed = 0;
+    for (const [name, fn] of Object.entries(tests)) {
+      const li = document.createElement("li");
+      try { fn(); li.className = "pass"; li.textContent = `✓ ${name}`; }
+      catch (err) { failed++; li.className = "fail"; li.textContent = `✗ ${name}：${err.message}`; }
+      document.getElementById("results").append(li);
+    }
+    const total = Object.keys(tests).length;
+    const summary = failed ? `FAIL：${failed} / ${total} 失敗` : `PASS：${total} 項全部通過`;
+    document.getElementById("summary").textContent = summary;
+    document.getElementById("summary").className = failed ? "fail" : "pass";
+    document.title = summary;
+  </script>
+</body>
+</html>

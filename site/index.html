@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>杏仁ミル 歌回歌單</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="top">
+    <h1>杏仁ミル 歌回歌單</h1>
+    <input id="search" type="search" placeholder="搜尋歌名或歌手…" autocomplete="off" aria-label="搜尋歌名或歌手">
+    <div class="filters">
+      <div id="languages" class="chips" role="group" aria-label="語言"></div>
+      <div id="categories" class="chips" role="group" aria-label="類別"></div>
+    </div>
+  </header>
+
+  <main>
+    <p id="count" class="count" aria-live="polite"></p>
+    <ul id="list" class="list"></ul>
+    <p id="empty" class="empty" hidden>找不到符合的歌曲，換個關鍵字試試看</p>
+  </main>
+
+  <div id="toast" class="toast" role="status" hidden></div>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>
