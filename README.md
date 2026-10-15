@@ -1,6 +1,6 @@
 # 杏仁ミル 歌回歌單
 
-網址：https://enderman1000456-tech.github.io/almond-milk-songlist/
+網址：https://mirumiru-blog.github.io/
 
 可搜尋的實況主歌單網頁，功能包括：
 
