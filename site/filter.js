@@ -32,6 +32,12 @@ export function availableCategories(songs, language) {
   );
 }
 
+// 歌曲資訊文字，例如「唱過 3 次 · 上次 2026/10/12」
+export function sungInfo(song) {
+  if (!song.count || !song.lastSung) return "還沒唱過";
+  return `唱過 ${song.count} 次 · 上次 ${song.lastSung.replaceAll("-", "/")}`;
+}
+
 export function filterSongs(songs, { query = "", language = ALL, category = ALL } = {}) {
   const q = normalizeText(query);
   return songs.filter(

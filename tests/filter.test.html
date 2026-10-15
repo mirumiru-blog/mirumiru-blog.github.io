@@ -12,14 +12,15 @@
   <h1 id="summary">執行中…</h1>
   <ul id="results"></ul>
   <script type="module">
-    import { ALL, availableCategories, filterSongs, listLanguages, normalizeText } from "../site/filter.js";
+    import { ALL, availableCategories, filterSongs, listLanguages, normalizeText, sungInfo } from "../site/filter.js";
 
+    const song = (name, language, category) => ({ name, language, category, count: 0, lastSung: null });
     const songs = [
-      { name: "ドライフラワー", language: "日文", category: "JPOP", link: null },
-      { name: "残酷な天使のテーゼ", language: "日文", category: "動漫歌曲", link: null },
-      { name: "Just be friends", language: "日文", category: "V家", link: null },
-      { name: "楊丞琳- 理想情人", language: "中文", category: "中文", link: null },
-      { name: "黃妃- 追追追", language: "台語", category: "台語", link: null },
+      song("ドライフラワー", "日文", "JPOP"),
+      song("残酷な天使のテーゼ", "日文", "動漫歌曲"),
+      song("Just be friends", "日文", "V家"),
+      song("楊丞琳- 理想情人", "中文", "中文"),
+      song("黃妃- 追追追", "台語", "台語"),
     ];
     const names = (list) => list.map((s) => s.name);
 
@@ -66,6 +67,13 @@
       },
       "normalizeText 處理空值"() {
         eq(normalizeText(undefined), "");
+      },
+      "有紀錄時顯示次數與上次日期"() {
+        eq(sungInfo({ count: 3, lastSung: "2026-10-12" }), "唱過 3 次 · 上次 2026/10/12");
+      },
+      "沒紀錄時顯示還沒唱過"() {
+        eq(sungInfo({ count: 0, lastSung: null }), "還沒唱過");
+        eq(sungInfo({}), "還沒唱過");
       },
     };
 

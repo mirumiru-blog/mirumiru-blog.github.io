@@ -91,6 +91,7 @@ main { padding: 8px 16px 40px; }
 .info { display: grid; min-width: 0; }
 .name { font-weight: 600; overflow-wrap: anywhere; }
 .tags { color: var(--muted); font-size: 0.8rem; }
+.stats { font-size: 0.8rem; }
 
 .actions { display: flex; gap: 6px; flex-shrink: 0; }
 

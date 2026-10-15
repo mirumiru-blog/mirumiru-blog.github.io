@@ -1,4 +1,4 @@
-import { ALL, availableCategories, filterSongs, listLanguages } from "./filter.js";
+import { ALL, availableCategories, filterSongs, listLanguages, sungInfo } from "./filter.js";
 
 const $ = (id) => document.getElementById(id);
 const state = { query: "", language: ALL, category: ALL };
@@ -31,19 +31,13 @@ function songItem(song) {
   tags.className = "tags";
   tags.textContent =
     song.category === song.language ? song.language : `${song.language} · ${song.category}`;
-  info.append(name, tags);
+  const stats = document.createElement("span");
+  stats.className = "stats";
+  stats.textContent = sungInfo(song);
+  info.append(name, tags, stats);
 
   const actions = document.createElement("div");
   actions.className = "actions";
-  if (song.link) {
-    const a = document.createElement("a");
-    a.className = "btn";
-    a.href = song.link;
-    a.target = "_blank";
-    a.rel = "noopener";
-    a.textContent = "試聽";
-    actions.append(a);
-  }
   const copy = document.createElement("button");
   copy.type = "button";
   copy.className = "btn primary";

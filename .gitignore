@@ -5,3 +5,10 @@ __pycache__/
 
 # 原始 Excel 只留在本機，不公開
 *.xlsx
+
+# 根目錄的個人圖片不上傳（site/ 內的網站圖片不受影響）
+/*.png
+/*.jpg
+/*.jpeg
+/*.gif
+/*.webp
