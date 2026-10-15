@@ -9,7 +9,7 @@
 - 一鍵複製歌名，方便貼到聊天室點歌
 - 每首歌顯示唱過幾次與上次唱的日期
 - 懷舊部落格風格版面，側欄有標示今天（台灣時間）的日曆和分類列表
-- 側欄有網站主人大頭貼，以及可播放指定 YouTube 歌曲的懷舊風格播放器
+- 側欄有網站主人大頭貼，以及自動播放指定 YouTube 歌曲的懷舊風格背景音樂播放器
 - 今日與總訪客人數：使用免費的 [Abacus](https://abacus.jasoncameron.dev) 計數服務，同一個瀏覽器同一天只算一次；本機預覽用另一組計數器，不會影響正式網站
 
 ## 更新歌單
@@ -34,15 +34,17 @@ Excel 原始檔只留在本機（已加入 .gitignore），不會上傳到 GitHu
 
 ```json
 {
- "owner": { "name": "杏仁咪嚕", "avatar": "images/avatar.jpg" },
+ "owner": { "caption": "miru's blog", "avatar": "images/avatar.jpg" },
  "player": [
-  { "title": "ドライフラワー", "url": "https://youtu.be/9rr2Oww94a8" }
+  { "title": "アスミルキミヘ - 杏仁ミル", "url": "https://youtu.be/ujcUdrf7YBg" }
  ]
 }
 ```
 
-- **換大頭貼**：把新圖片放到 `site/images/`（建議寬度 480 像素左右的 jpg，檔案不要太大），再把 `avatar` 改成新檔名；或直接用同樣的檔名覆蓋 `site/images/avatar.jpg`
-- **換播放器歌曲**：修改 `player` 裡的 `title`（播放器上方顯示的歌名）和 `url`（YouTube 網址，youtu.be 短網址或一般網址都可以）。放兩首以上會出現上一首／下一首按鈕，播完自動播下一首
+- **換大頭貼**：把新圖片放到 `site/images/`（建議 240×240 像素左右的 jpg，檔案不要太大），再把 `avatar` 改成新檔名；或直接用同樣的檔名覆蓋 `site/images/avatar.jpg`
+- **改大頭貼下方文字**：修改 `caption`
+- **換播放器歌曲**：修改 `player` 裡的 `title`（播放器顯示的歌名）和 `url`（YouTube 網址，youtu.be 短網址或一般網址都可以）。只放一首會重複播放；放兩首以上會出現上一首／下一首按鈕，播完自動播下一首
+- 播放器一進網站就會自動播放。大多數瀏覽器（尤其手機）不允許有聲音的自動播放，這時會先靜音播放，訪客點一下網頁任意處就會開啟聲音
 - 改完後提交並推送 `site/data/settings.json`（和新圖片），網站就會更新
 
 ## 本機預覽

@@ -15,7 +15,38 @@
     import { ALL, availableCategories, categoryTree, filterSongs, listLanguages, normalizeText, sungInfo } from "../site/filter.js";
     import { isoDate, monthGrid, shiftMonth, todayInTaipei } from "../site/calendar.js";
     import { countVisit, namespaceFor } from "../site/counter.js";
-    import { formatTime, parseYouTubeId, playlistFrom } from "../site/player.js";
+    import { formatTime, mountPlayer, parseYouTubeId, playlistFrom } from "../site/player.js";
+
+    // 假的 YouTube API：blockSound 為 true 時模擬瀏覽器擋下有聲音的自動播放
+    function installFakeYouTube({ blockSound }) {
+      const log = [];
+      const State = { UNSTARTED: -1, ENDED: 0, PLAYING: 1, PAUSED: 2 };
+      window.YT = {
+        PlayerState: State,
+        Player: class {
+          constructor(host, options) {
+            this.options = options;
+            this.state = State.UNSTARTED;
+            this.muted = false;
+            setTimeout(() => options.events.onReady(), 0);
+          }
+          setState(s) { this.state = s; this.options.events.onStateChange({ data: s }); }
+          playVideo() { log.push("play"); if (!blockSound || this.muted || this.unlocked) this.setState(State.PLAYING); }
+          pauseVideo() { log.push("pause"); this.setState(State.PAUSED); }
+          mute() { log.push("mute"); this.muted = true; }
+          unMute() { log.push("unMute"); this.muted = false; this.unlocked = true; }
+          isMuted() { return this.muted; }
+          setVolume() {}
+          getPlayerState() { return this.state; }
+          getCurrentTime() { return 0; }
+          getDuration() { return 243; }
+          seekTo() {}
+          loadVideoById() {}
+        },
+      };
+      return log;
+    }
+    const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
     const song = (name, language, category) => ({ name, language, category, count: 0, lastSung: null });
     const songs = [
@@ -207,12 +238,64 @@
         eq(formatTime(-5), "00:00");
       },
 
+      async "播放器只顯示歌名與控制列，不顯示影片畫面"() {
+        installFakeYouTube({ blockSound: false });
+        const box = document.createElement("div");
+        document.body.append(box);
+        mountPlayer(box, [{ title: "測試歌", url: "https://youtu.be/9rr2Oww94a8" }]);
+        eq(box.querySelector(".player-title").textContent, "♪ 測試歌");
+        eq(box.querySelector(".player-hidden").getAttribute("aria-hidden"), "true");
+        eq(box.querySelector(".player-screen, .player-big"), null);
+        eq(!!box.querySelector(".player-seek") && !!box.querySelector(".player-volume"), true);
+        box.remove();
+      },
+      async "瀏覽器允許時直接有聲音自動播放"() {
+        const log = installFakeYouTube({ blockSound: false });
+        const box = document.createElement("div");
+        document.body.append(box);
+        mountPlayer(box, [{ title: "測試歌", url: "https://youtu.be/9rr2Oww94a8" }]);
+        await sleep(1700);
+        eq(log.includes("mute"), false);
+        eq(box.querySelector(".player-hint").hidden, true);
+        eq(box.querySelector(".player-btn").getAttribute("aria-label"), "暫停");
+        box.remove();
+      },
+      async "聲音被擋時改靜音播放，點網頁後開啟聲音"() {
+        const log = installFakeYouTube({ blockSound: true });
+        const box = document.createElement("div");
+        document.body.append(box);
+        mountPlayer(box, [{ title: "測試歌", url: "https://youtu.be/9rr2Oww94a8" }]);
+        await sleep(1700);
+        eq(log.includes("mute"), true);
+        eq(box.querySelector(".player-hint").hidden, false);
+        eq(box.querySelector(".player-btn").getAttribute("aria-label"), "暫停");
+        document.body.dispatchEvent(new Event("pointerdown", { bubbles: true }));
+        eq(log.at(-1) === "unMute" || log.includes("unMute"), true);
+        eq(box.querySelector(".player-hint").hidden, true);
+        box.remove();
+      },
+      async "靜音自動播放時按暫停鍵會開聲音而不是暫停"() {
+        const log = installFakeYouTube({ blockSound: true });
+        const box = document.createElement("div");
+        document.body.append(box);
+        mountPlayer(box, [{ title: "測試歌", url: "https://youtu.be/9rr2Oww94a8" }]);
+        await sleep(1700);
+        box.querySelector(".player-btn").click();
+        eq(log.includes("unMute"), true);
+        eq(log.includes("pause"), false);
+        box.querySelector(".player-btn").click();
+        eq(log.at(-1), "pause");
+        box.remove();
+        delete window.YT;
+      },
+
       // ---------- 網站設定檔 ----------
       async "settings.json 格式正確且大頭貼存在"() {
         const settings = await (await fetch("../site/data/settings.json")).json();
-        eq(typeof settings.owner.name, "string");
+        eq(typeof settings.owner.caption, "string");
         const avatar = await fetch(`../site/${settings.owner.avatar}`, { method: "HEAD" });
         eq(avatar.ok, true);
+        eq(settings.player.length > 0, true);
         eq(playlistFrom(settings.player).length, settings.player.length);
       },
     };

@@ -184,14 +184,14 @@ countVisit({ today: isoDate(today) }).then((counts) => {
 fetch("data/settings.json")
   .then((r) => r.json())
   .then(({ owner = {}, player = [] }) => {
-    const name = owner.name || "網站主人";
+    const caption = owner.caption || "";
     if (owner.avatar) {
       $("owner-avatar").src = owner.avatar;
-      $("owner-avatar").alt = `本網站主人 ${name} 的照片`;
+      $("owner-avatar").alt = caption ? `${caption} 大頭貼` : "大頭貼";
     } else {
       $("owner-avatar").hidden = true;
     }
-    $("owner-caption").textContent = `本網站主人：${name} ♥`;
+    $("owner-caption").textContent = caption;
     mountPlayer($("player"), player);
   })
   .catch(() => {

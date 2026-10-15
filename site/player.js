@@ -1,4 +1,4 @@
-// 懷舊風格 YouTube 播放器：影片畫面 + 自訂的播放、進度、音量控制列
+// 懷舊風格 YouTube 背景音樂播放器：歌名 + 自訂的播放、進度、音量控制列
 
 const ID_PATTERN = /^[\w-]{11}$/;
 
@@ -66,6 +66,9 @@ function button(className, label, text) {
   return btn;
 }
 
+// 背景音樂播放器：只顯示歌名與控制列，影片畫面隱藏。
+// 瀏覽器不允許「有聲音」的自動播放，所以先靜音自動播放，
+// 訪客第一次點擊或按鍵時再開啟聲音。
 export function mountPlayer(container, entries) {
   const list = playlistFrom(entries);
   if (!list.length) {
@@ -76,15 +79,22 @@ export function mountPlayer(container, entries) {
   let player = null;
   let ready = false;
   let timer = null;
+  let needsSound = false; // 目前是為了自動播放而暫時靜音
+  let userPaused = false;
 
   const title = document.createElement("div");
   title.className = "player-title";
+  const hint = document.createElement("div");
+  hint.className = "player-hint";
+  hint.hidden = true;
+  hint.textContent = "點一下網頁任意處即可開啟聲音";
 
-  const screen = document.createElement("div");
-  screen.className = "player-screen";
+  // YouTube 播放器本體，隱藏不顯示
+  const hidden = document.createElement("div");
+  hidden.className = "player-hidden";
+  hidden.setAttribute("aria-hidden", "true");
   const host = document.createElement("div");
-  const bigPlay = button("player-big", "播放", "▶︎");
-  screen.append(host, bigPlay);
+  hidden.append(host);
 
   const bar = document.createElement("div");
   bar.className = "player-bar";
@@ -108,15 +118,16 @@ export function mountPlayer(container, entries) {
   volume.className = "player-volume";
   volume.min = "0";
   volume.max = "100";
-  volume.value = "80";
+  volume.value = "60";
   volume.setAttribute("aria-label", "音量");
 
   const multi = list.length > 1;
   bar.append(...(multi ? [prev] : []), play, ...(multi ? [next] : []), current, seek, duration, mute, volume);
-  container.append(title, screen, bar);
+  container.append(title, hint, bar, hidden);
 
   function showTitle() {
-    title.textContent = list[index].title;
+    title.textContent = `♪ ${list[index].title}`;
+    title.title = list[index].title;
     current.textContent = formatTime(0);
     duration.textContent = formatTime(0);
     seek.value = "0";
@@ -125,7 +136,6 @@ export function mountPlayer(container, entries) {
   function setPlaying(playing) {
     play.textContent = playing ? "⏸︎" : "▶︎";
     play.setAttribute("aria-label", playing ? "暫停" : "播放");
-    bigPlay.hidden = playing;
   }
 
   function tick() {
@@ -137,62 +147,107 @@ export function mountPlayer(container, entries) {
     if (total > 0 && document.activeElement !== seek) seek.value = String(Math.round((now / total) * 1000));
   }
 
-  function load(newIndex, autoplay) {
-    index = (newIndex + list.length) % list.length;
-    showTitle();
-    if (!ready) return;
-    if (autoplay) player.loadVideoById(list[index].id);
-    else player.cueVideoById(list[index].id);
-  }
-
-  function toggle() {
-    if (!ready) return;
-    const state = player.getPlayerState();
-    if (state === window.YT.PlayerState.PLAYING) player.pauseVideo();
-    else player.playVideo();
-  }
-
   function updateMute() {
-    const muted = player?.isMuted?.() || Number(volume.value) === 0;
+    const muted = needsSound || player?.isMuted?.() || Number(volume.value) === 0;
     mute.textContent = muted ? "×" : "♪";
     mute.setAttribute("aria-label", muted ? "取消靜音" : "靜音");
   }
 
+  function isPlaying() {
+    return player.getPlayerState() === window.YT.PlayerState.PLAYING;
+  }
+
+  // 訪客第一次互動：開啟聲音（若還沒在播就開始播）。回傳是否有處理。
+  function unlockSound() {
+    if (!ready || !needsSound) return false;
+    needsSound = false;
+    hint.hidden = true;
+    player.unMute();
+    player.setVolume(Number(volume.value));
+    if (!userPaused && !isPlaying()) player.playVideo();
+    setTimeout(updateMute, 100);
+    return true;
+  }
+
+  function load(newIndex) {
+    index = (newIndex + list.length) % list.length;
+    showTitle();
+    if (ready) player.loadVideoById(list[index].id);
+  }
+
+  function toggle() {
+    if (!ready || unlockSound()) return;
+    if (isPlaying()) {
+      userPaused = true;
+      player.pauseVideo();
+    } else {
+      userPaused = false;
+      player.playVideo();
+    }
+  }
+
+  // 自動播放：先嘗試有聲音播放，被瀏覽器擋下就改成靜音播放
+  function autoplay() {
+    player.setVolume(Number(volume.value));
+    player.playVideo();
+    setTimeout(() => {
+      if (userPaused || needsSound) return;
+      if (isPlaying() && !player.isMuted()) return;
+      needsSound = true;
+      hint.hidden = false;
+      player.mute();
+      player.playVideo();
+      updateMute();
+    }, 1500);
+  }
+
   play.addEventListener("click", toggle);
-  bigPlay.addEventListener("click", toggle);
-  prev.addEventListener("click", () => load(index - 1, true));
-  next.addEventListener("click", () => load(index + 1, true));
+  prev.addEventListener("click", () => {
+    unlockSound();
+    load(index - 1);
+  });
+  next.addEventListener("click", () => {
+    unlockSound();
+    load(index + 1);
+  });
   seek.addEventListener("change", () => {
     if (ready) player.seekTo((Number(seek.value) / 1000) * player.getDuration(), true);
   });
   volume.addEventListener("input", () => {
     if (!ready) return;
+    unlockSound();
     player.setVolume(Number(volume.value));
     if (Number(volume.value) > 0 && player.isMuted()) player.unMute();
     updateMute();
   });
   mute.addEventListener("click", () => {
-    if (!ready) return;
+    if (!ready || unlockSound()) return;
     if (player.isMuted()) player.unMute();
     else player.mute();
     // isMuted 會延遲更新，稍後再刷新圖示
     setTimeout(updateMute, 100);
   });
+  for (const type of ["pointerdown", "keydown", "touchstart"]) {
+    document.addEventListener(type, (event) => {
+      if (!container.contains(event.target)) unlockSound();
+    }, { passive: true });
+  }
 
   showTitle();
   setPlaying(false);
 
   loadYouTubeApi()
-    .then((YT) => {
+    .then(() => {
+      const YT = window.YT;
       player = new YT.Player(host, {
         videoId: list[index].id,
-        width: "100%",
-        height: "100%",
-        playerVars: { controls: 0, rel: 0, playsinline: 1, modestbranding: 1, origin: location.origin },
+        width: "200",
+        height: "200",
+        playerVars: { controls: 0, rel: 0, playsinline: 1, autoplay: 1, origin: location.origin },
         events: {
           onReady() {
             ready = true;
-            player.setVolume(Number(volume.value));
+            autoplay();
             tick();
           },
           onStateChange(event) {
@@ -202,12 +257,15 @@ export function mountPlayer(container, entries) {
             if (playing) timer = setInterval(tick, 500);
             tick();
             if (event.data === YT.PlayerState.ENDED) {
-              if (multi) load(index + 1, true);
-              else seek.value = "0";
+              if (multi) load(index + 1);
+              else {
+                player.seekTo(0, true);
+                player.playVideo();
+              }
             }
           },
           onError() {
-            title.textContent = `${list[index].title}（無法播放）`;
+            title.textContent = `♪ ${list[index].title}（無法播放）`;
           },
         },
       });
