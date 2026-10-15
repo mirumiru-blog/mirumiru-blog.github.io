@@ -1,4 +1,4 @@
-import { ALL, availableCategories, categoryTree, filterSongs, listLanguages, sungInfo } from "./filter.js";
+import { ALL, availableCategories, categoryTree, filterChips, filterSongs, listLanguages, sungInfo } from "./filter.js";
 import { MONTH_NAMES, isoDate, monthGrid, shiftMonth, todayInTaipei } from "./calendar.js";
 import { countVisit } from "./counter.js";
 import { mountPlayer } from "./player.js";
@@ -84,11 +84,15 @@ function render() {
     )
   );
   $("categories").replaceChildren(
-    ...[ALL, ...categories].map((v) =>
-      pickButton("chip", v, v === state.category, () => setFilter(state.language, v))
+    ...filterChips(songs).map((chip) =>
+      pickButton(
+        "chip",
+        chip.label,
+        chip.language === state.language && chip.category === state.category,
+        () => setFilter(chip.language, chip.category)
+      )
     )
   );
-  $("categories").hidden = categories.length === 0;
   renderTree();
 
   const result = filterSongs(songs, state);

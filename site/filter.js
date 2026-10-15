@@ -46,6 +46,19 @@ export function categoryTree(songs) {
   });
 }
 
+// 搜尋框下方的標籤：全部、各語言、各類別。
+// 點類別時，若該類別只出現在一種語言就一併切到那個語言，否則語言維持全部。
+export function filterChips(songs) {
+  const languages = listLanguages(songs);
+  const chips = [{ label: "全部", language: ALL, category: ALL }];
+  for (const language of languages) chips.push({ label: language, language, category: ALL });
+  for (const category of availableCategories(songs, ALL)) {
+    const inLanguages = new Set(songs.filter((s) => s.category === category).map((s) => s.language));
+    chips.push({ label: category, language: inLanguages.size === 1 ? [...inLanguages][0] : ALL, category });
+  }
+  return chips;
+}
+
 // 歌曲資訊文字，例如「唱過 3 次 · 上次 2026/10/12」
 export function sungInfo(song) {
   if (!song.count || !song.lastSung) return "-";

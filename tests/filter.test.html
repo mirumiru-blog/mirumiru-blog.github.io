@@ -12,7 +12,7 @@
   <h1 id="summary">執行中…</h1>
   <ul id="results"></ul>
   <script type="module">
-    import { ALL, availableCategories, categoryTree, filterSongs, listLanguages, normalizeText, sungInfo } from "../site/filter.js";
+    import { ALL, availableCategories, categoryTree, filterChips, filterSongs, listLanguages, normalizeText, sungInfo } from "../site/filter.js";
     import { isoDate, monthGrid, shiftMonth, todayInTaipei } from "../site/calendar.js";
     import { countVisit, namespaceFor } from "../site/counter.js";
     import { formatTime, mountPlayer, parseYouTubeId, playlistFrom } from "../site/player.js";
@@ -135,6 +135,24 @@
           { language: "中文", count: 1, categories: [] },
           { language: "台語", count: 1, categories: [] },
         ]);
+      },
+
+      "搜尋框下方標籤包含全部、各語言與各類別"() {
+        eq(filterChips(songs).map((c) => c.label), ["全部", "日文", "中文", "台語", "JPOP", "動漫歌曲", "V家"]);
+      },
+      "語言標籤只篩語言、類別標籤會帶上所屬語言"() {
+        const chips = Object.fromEntries(filterChips(songs).map((c) => [c.label, c]));
+        eq(chips["全部"], { label: "全部", language: ALL, category: ALL });
+        eq(chips["台語"], { label: "台語", language: "台語", category: ALL });
+        eq(chips["JPOP"], { label: "JPOP", language: "日文", category: "JPOP" });
+        eq(names(filterSongs(songs, chips["台語"])), ["黃妃- 追追追"]);
+        eq(names(filterSongs(songs, chips["V家"])), ["Just be friends"]);
+      },
+      "跨語言的類別不鎖定語言"() {
+        const mixed = [...songs, song("中文動漫歌", "中文", "動漫歌曲")];
+        const anime = filterChips(mixed).find((c) => c.label === "動漫歌曲");
+        eq(anime.language, ALL);
+        eq(filterSongs(mixed, anime).length, 2);
       },
 
       // ---------- 日曆 ----------
