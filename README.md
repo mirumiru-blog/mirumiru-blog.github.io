@@ -1,5 +1,7 @@
 # 杏仁ミル 歌回歌單
 
+網址：https://enderman1000456-tech.github.io/almond-milk-songlist/
+
 可搜尋的實況主歌單網頁，功能包括：
 
 - 關鍵字搜尋：歌名或歌手都能搜，不分大小寫、全形或半形，平假名也能搜到片假名
@@ -17,6 +19,9 @@
    ```
 
    需要先安裝 openpyxl（`python -m pip install openpyxl`）。
+3. 提交並推送：`git add site/data/songs.json`、`git commit`、`git push`，GitHub 會自動跑測試並更新網站
+
+Excel 原始檔只留在本機（已加入 .gitignore），不會上傳到 GitHub。
 
 ## 本機預覽
 
