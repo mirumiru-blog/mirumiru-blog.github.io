@@ -32,6 +32,20 @@ export function availableCategories(songs, language) {
   );
 }
 
+// 側欄分類樹：每個語言的歌曲數，以及底下各類別的歌曲數
+export function categoryTree(songs) {
+  return listLanguages(songs).map((language) => {
+    const inLanguage = songs.filter((s) => s.language === language);
+    return {
+      language,
+      count: inLanguage.length,
+      categories: availableCategories(inLanguage, language)
+        .filter((c) => c !== language)
+        .map((name) => ({ name, count: inLanguage.filter((s) => s.category === name).length })),
+    };
+  });
+}
+
 // 歌曲資訊文字，例如「唱過 3 次 · 上次 2026/10/12」
 export function sungInfo(song) {
   if (!song.count || !song.lastSung) return "還沒唱過";

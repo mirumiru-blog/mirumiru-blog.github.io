@@ -1,25 +1,12 @@
+/* 懷舊部落格風格：粉紅底、細粉框、小字 */
 :root {
-  --bg: #fbf7f2;
-  --surface: #ffffff;
-  --text: #2b2420;
-  --muted: #8a7d72;
-  --border: #eadfd3;
-  --accent: #c27a4a;
-  --accent-text: #ffffff;
-  --chip: #f3ebe2;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #1c1916;
-    --surface: #26221e;
-    --text: #f1e9e0;
-    --muted: #a89b8f;
-    --border: #3a332d;
-    --accent: #e09a68;
-    --accent-text: #1c1916;
-    --chip: #322c27;
-  }
+  color-scheme: light;
+  --bg: #ffccff;
+  --line: #ff66cc;
+  --text: #9933cc;
+  --pink: #ff3399;
+  --soft: #cc66cc;
+  --hilite: #ffffff;
 }
 
 * { box-sizing: border-box; }
@@ -28,96 +15,202 @@ body {
   margin: 0;
   background: var(--bg);
   color: var(--text);
-  font-family: system-ui, -apple-system, "Segoe UI", "Noto Sans TC", "Noto Sans JP", sans-serif;
-  line-height: 1.5;
+  font: 13px/1.6 Verdana, "PMingLiU", "新細明體", "Noto Sans TC", "Noto Sans JP", sans-serif;
 }
 
-.top {
-  position: sticky;
-  top: 0;
-  z-index: 1;
-  background: var(--bg);
-  padding: 16px 16px 8px;
-  border-bottom: 1px solid var(--border);
-}
+button { font: inherit; color: inherit; cursor: pointer; }
 
-.top, main { max-width: 720px; margin: 0 auto; }
-
-h1 { font-size: 1.3rem; margin: 0 0 12px; }
-
-#search {
-  width: 100%;
-  padding: 10px 14px;
-  font-size: 1rem;
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  background: var(--surface);
-  color: var(--text);
-}
-#search:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
-
-.filters { display: grid; gap: 8px; margin-top: 10px; }
-.chips { display: flex; flex-wrap: wrap; gap: 6px; }
-.chips[hidden] { display: none; }
-
-.chip {
-  border: 1px solid transparent;
-  background: var(--chip);
-  color: var(--text);
+/* ---------- 上方工具列 ---------- */
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
   padding: 4px 12px;
-  border-radius: 999px;
-  font-size: 0.9rem;
-  cursor: pointer;
+  background: #ffffff;
+  border-bottom: 1px solid #cccccc;
+  color: #666666;
+  font-size: 12px;
 }
-.chip[aria-pressed="true"] { background: var(--accent); color: var(--accent-text); }
+.topbar-name { color: var(--pink); font-weight: bold; }
 
-main { padding: 8px 16px 40px; }
+/* ---------- 版面 ---------- */
+.page {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 12px 16px 40px;
+}
 
-.count { color: var(--muted); font-size: 0.9rem; margin: 4px 0 8px; }
+.box { border: 1px solid var(--line); }
 
-.list { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.title {
+  margin: 0 0 6px;
+  padding: 2px 8px;
+  font-size: 12px;
+  font-weight: normal;
+  text-align: center;
+  letter-spacing: 0.3em;
+  color: var(--pink);
+}
+
+.head-row,
+.body-row { display: grid; gap: 6px; margin-bottom: 6px; }
+
+.intro { padding: 6px 8px; font-size: 12px; color: var(--soft); min-height: 64px; }
+
+.head-side { display: grid; gap: 6px; align-content: start; }
+
+.tabs { display: flex; flex-wrap: wrap; gap: 4px; }
+.tab {
+  flex: 1 1 auto;
+  border: 1px solid var(--line);
+  background: transparent;
+  padding: 1px 10px;
+  color: var(--pink);
+}
+.tab[aria-pressed="true"] { background: var(--hilite); }
+
+.visitors {
+  margin: 0;
+  padding: 1px 6px;
+  text-align: center;
+  font-family: "Courier New", monospace;
+  font-size: 11px;
+  letter-spacing: 0.15em;
+  color: var(--pink);
+}
+
+/* ---------- 主欄（歌單） ---------- */
+.main { padding: 10px 10px 20px; min-width: 0; }
+
+.post-date { margin: 0 0 10px; color: var(--pink); }
+.post-date .box {
+  display: inline-block;
+  min-width: 60%;
+  padding: 0 8px;
+  font-family: "Times New Roman", serif;
+  text-align: center;
+}
+
+.search-row { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.search-row label { font-family: "Times New Roman", serif; color: var(--pink); }
+#search {
+  flex: 1 1 160px;
+  min-width: 0;
+  padding: 2px 8px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: #ffffff;
+  color: var(--text);
+  font: inherit;
+}
+#search:focus { outline: 2px solid var(--pink); outline-offset: 0; }
+
+.chips { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 8px; }
+.chips[hidden] { display: none; }
+.chip {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: transparent;
+  padding: 0 10px;
+  font-size: 12px;
+  color: var(--pink);
+}
+.chip[aria-pressed="true"] { background: var(--hilite); }
+
+.count { margin: 10px 0 4px; font-size: 12px; color: var(--soft); text-align: right; }
+
+.list { list-style: none; margin: 0; padding: 0; }
 
 .song {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
-  padding: 10px 14px;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 10px;
+  gap: 10px;
+  padding: 6px 2px;
+  border-bottom: 1px dotted var(--line);
 }
 
 .info { display: grid; min-width: 0; }
-.name { font-weight: 600; overflow-wrap: anywhere; }
-.tags { color: var(--muted); font-size: 0.8rem; }
-.stats { font-size: 0.8rem; }
+.name { color: var(--text); overflow-wrap: anywhere; }
+.meta { font-size: 11px; color: var(--soft); }
 
-.actions { display: flex; gap: 6px; flex-shrink: 0; }
-
-.btn {
-  border: 1px solid var(--border);
+.copy {
+  flex-shrink: 0;
+  border: 1px solid var(--line);
+  border-radius: 10px;
   background: transparent;
-  color: var(--text);
-  padding: 4px 12px;
-  border-radius: 8px;
-  font-size: 0.85rem;
-  text-decoration: none;
-  cursor: pointer;
+  padding: 0 10px;
+  font-size: 11px;
+  color: var(--pink);
 }
-.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-text); }
+.copy:hover, .tab:hover, .chip:hover, .tree-link:hover { background: var(--hilite); }
 
-.empty { text-align: center; color: var(--muted); padding: 32px 0; }
+.empty { text-align: center; color: var(--soft); padding: 32px 0; }
 
+/* ---------- 側欄 ---------- */
+.side { display: grid; gap: 16px; align-content: start; }
+
+.side-block { font-size: 12px; }
+.side-title {
+  margin: 0 0 4px;
+  font-family: "Times New Roman", serif;
+  font-size: 11px;
+  font-weight: normal;
+  letter-spacing: 0.2em;
+  color: var(--pink);
+}
+
+.cal-nav { display: flex; justify-content: center; align-items: center; gap: 6px; color: var(--text); }
+.cal-nav button { border: 0; background: none; padding: 0 4px; color: var(--pink); }
+
+.calendar { width: 100%; border-collapse: collapse; text-align: center; font-size: 11px; }
+.calendar th { font-weight: bold; color: var(--text); }
+.calendar td { padding: 1px 0; color: var(--text); }
+.calendar td.today {
+  background: var(--hilite);
+  outline: 1px solid var(--pink);
+  color: var(--pink);
+  font-weight: bold;
+}
+
+.tree, .tree-sub { list-style: none; margin: 0; padding: 0; }
+.tree-sub { padding-left: 12px; }
+.tree-link {
+  border: 0;
+  background: none;
+  padding: 0;
+  text-align: left;
+  color: var(--pink);
+  font-size: 12px;
+}
+.tree-sub .tree-link::before { content: "‧"; }
+.tree-link[aria-pressed="true"] { text-decoration: underline; font-weight: bold; }
+
+/* ---------- 提示 ---------- */
 .toast {
   position: fixed;
   left: 50%;
   bottom: 24px;
   transform: translateX(-50%);
-  background: var(--text);
-  color: var(--bg);
-  padding: 8px 16px;
-  border-radius: 8px;
-  font-size: 0.9rem;
+  background: #ffffff;
+  border: 1px solid var(--line);
+  color: var(--pink);
+  padding: 6px 14px;
+  font-size: 12px;
   max-width: calc(100% - 32px);
+}
+
+/* ---------- 寬螢幕：兩欄 ---------- */
+@media (min-width: 760px) {
+  .head-row { grid-template-columns: 1fr 360px; }
+  .body-row { grid-template-columns: 1fr 210px; align-items: start; }
+}
+
+/* ---------- 手機：側欄移到歌單前，分類樹隱藏（上方已有分頁） ---------- */
+@media (max-width: 759px) {
+  .side { order: -1; }
+  .side-categories { display: none; }
+  .calendar { max-width: 320px; margin: 0 auto; }
+  .side-title { text-align: center; }
 }

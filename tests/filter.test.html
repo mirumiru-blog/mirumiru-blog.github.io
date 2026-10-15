@@ -2,7 +2,7 @@
 <html lang="zh-Hant">
 <head>
   <meta charset="utf-8">
-  <title>filter.js 測試</title>
+  <title>網頁邏輯測試</title>
   <style>
     body { font-family: system-ui, sans-serif; padding: 16px; }
     .pass { color: #1a7f37; } .fail { color: #cf222e; }
@@ -12,7 +12,9 @@
   <h1 id="summary">執行中…</h1>
   <ul id="results"></ul>
   <script type="module">
-    import { ALL, availableCategories, filterSongs, listLanguages, normalizeText, sungInfo } from "../site/filter.js";
+    import { ALL, availableCategories, categoryTree, filterSongs, listLanguages, normalizeText, sungInfo } from "../site/filter.js";
+    import { isoDate, monthGrid, shiftMonth, todayInTaipei } from "../site/calendar.js";
+    import { countVisit, namespaceFor } from "../site/counter.js";
 
     const song = (name, language, category) => ({ name, language, category, count: 0, lastSung: null });
     const songs = [
@@ -24,7 +26,25 @@
     ];
     const names = (list) => list.map((s) => s.name);
 
+    // 假的計數服務：記錄呼叫的網址，回傳指定的值
+    function fakeCounter(values = {}, { status = 200 } = {}) {
+      const calls = [];
+      const fetchFn = async (url) => {
+        calls.push(url);
+        const key = url.split("/").pop();
+        if (status !== 200) return { ok: false, status, json: async () => ({}) };
+        if (!(key in values)) return { ok: false, status: 404, json: async () => ({ error: "Key not found" }) };
+        return { ok: true, status: 200, json: async () => ({ value: values[key] }) };
+      };
+      return { calls, fetchFn };
+    }
+    function memoryStorage(initial = {}) {
+      const data = { ...initial };
+      return { getItem: (k) => data[k] ?? null, setItem: (k, v) => (data[k] = v), data };
+    }
+
     const tests = {
+      // ---------- 搜尋與篩選 ----------
       "空條件回傳全部"() {
         eq(filterSongs(songs).length, 5);
       },
@@ -75,6 +95,78 @@
         eq(sungInfo({ count: 0, lastSung: null }), "還沒唱過");
         eq(sungInfo({}), "還沒唱過");
       },
+      "側欄分類樹含各語言與類別數量"() {
+        eq(categoryTree(songs), [
+          { language: "日文", count: 3, categories: [
+            { name: "JPOP", count: 1 }, { name: "動漫歌曲", count: 1 }, { name: "V家", count: 1 },
+          ] },
+          { language: "中文", count: 1, categories: [] },
+          { language: "台語", count: 1, categories: [] },
+        ]);
+      },
+
+      // ---------- 日曆 ----------
+      "2026 年 10 月從週四開始、共 31 天"() {
+        const weeks = monthGrid(2026, 10);
+        eq(weeks[0], [null, null, null, null, 1, 2, 3]);
+        eq(weeks.flat().filter(Boolean).length, 31);
+        eq(weeks.every((w) => w.length === 7), true);
+      },
+      "閏年二月有 29 天"() {
+        eq(monthGrid(2028, 2).flat().filter(Boolean).length, 29);
+        eq(monthGrid(2026, 2).flat().filter(Boolean).length, 28);
+      },
+      "切換月份可跨年"() {
+        eq(shiftMonth({ year: 2026, month: 12 }, 1), { year: 2027, month: 1 });
+        eq(shiftMonth({ year: 2026, month: 1 }, -1), { year: 2025, month: 12 });
+      },
+      "今天以台灣時間計算"() {
+        // UTC 10/15 20:00 = 台灣 10/16 04:00
+        eq(todayInTaipei(new Date("2026-10-15T20:00:00Z")), { year: 2026, month: 10, day: 16 });
+        eq(isoDate({ year: 2026, month: 1, day: 5 }), "2026-01-05");
+      },
+
+      // ---------- 訪客計數 ----------
+      "正式網站與本機使用不同計數器"() {
+        eq(namespaceFor("enderman1000456-tech.github.io"), "almond-milk-songlist");
+        eq(namespaceFor("localhost"), "almond-milk-songlist-dev");
+      },
+      async "今天第一次來訪會加一並記住"() {
+        const { calls, fetchFn } = fakeCounter({ "day-2026-10-16": 5, total: 120 });
+        const storage = memoryStorage();
+        const result = await countVisit({ today: "2026-10-16", namespace: "ns", fetchFn, storage });
+        eq(result, { today: 5, total: 120 });
+        eq(calls.every((u) => u.includes("/hit/ns/")), true);
+        eq(storage.data.lastCountedVisit, "2026-10-16");
+      },
+      async "同一天再來只讀取不加一"() {
+        const { calls, fetchFn } = fakeCounter({ "day-2026-10-16": 5, total: 120 });
+        const storage = memoryStorage({ lastCountedVisit: "2026-10-16" });
+        await countVisit({ today: "2026-10-16", namespace: "ns", fetchFn, storage });
+        eq(calls.every((u) => u.includes("/get/ns/")), true);
+      },
+      async "隔天再來會重新加一"() {
+        const { calls, fetchFn } = fakeCounter({ "day-2026-10-17": 1, total: 121 });
+        const storage = memoryStorage({ lastCountedVisit: "2026-10-16" });
+        await countVisit({ today: "2026-10-17", namespace: "ns", fetchFn, storage });
+        eq(calls.every((u) => u.includes("/hit/")), true);
+      },
+      async "計數器還沒建立時視為 0"() {
+        const { fetchFn } = fakeCounter({ total: 7 });
+        const storage = memoryStorage({ lastCountedVisit: "2026-10-16" });
+        eq(await countVisit({ today: "2026-10-16", namespace: "ns", fetchFn, storage }), { today: 0, total: 7 });
+      },
+      async "服務故障時回傳 null 且不記住"() {
+        const { fetchFn } = fakeCounter({}, { status: 500 });
+        const storage = memoryStorage();
+        eq(await countVisit({ today: "2026-10-16", namespace: "ns", fetchFn, storage }), null);
+        eq(storage.data.lastCountedVisit, undefined);
+      },
+      async "無法使用 localStorage 時仍可計數"() {
+        const { fetchFn } = fakeCounter({ "day-2026-10-16": 1, total: 1 });
+        const broken = { getItem() { throw new Error("blocked"); }, setItem() { throw new Error("blocked"); } };
+        eq(await countVisit({ today: "2026-10-16", namespace: "ns", fetchFn, storage: broken }), { today: 1, total: 1 });
+      },
     };
 
     function eq(actual, expected) {
@@ -85,7 +177,7 @@
     let failed = 0;
     for (const [name, fn] of Object.entries(tests)) {
       const li = document.createElement("li");
-      try { fn(); li.className = "pass"; li.textContent = `✓ ${name}`; }
+      try { await fn(); li.className = "pass"; li.textContent = `✓ ${name}`; }
       catch (err) { failed++; li.className = "fail"; li.textContent = `✗ ${name}：${err.message}`; }
       document.getElementById("results").append(li);
     }
