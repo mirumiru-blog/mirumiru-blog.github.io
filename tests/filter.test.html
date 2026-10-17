@@ -12,6 +12,7 @@
   <h1 id="summary">執行中…</h1>
   <ul id="results"></ul>
   <script type="module">
+    import { SORT_NAME, SORT_ORIGINAL, compareNames, sortSongs } from "../site/filter.js";
     import { ALL, availableCategories, categoryTree, filterChips, filterSongs, listLanguages, normalizeText, sungInfo } from "../site/filter.js";
     import { isoDate, monthGrid, shiftMonth, todayInTaipei } from "../site/calendar.js";
     import { countVisit, namespaceFor } from "../site/counter.js";
@@ -153,6 +154,33 @@
         const anime = filterChips(mixed).find((c) => c.label === "動漫歌曲");
         eq(anime.language, ALL);
         eq(filterSongs(mixed, anime).length, 2);
+      },
+
+      // ---------- 排序 ----------
+      "歌名排序：數字、英文、假名、漢字依序分組"() {
+        const input = ["黃妃- 追追追", "ドライフラワー", "Bunny Girl", "366日", "あいのうた", "WILL", "一輩子"];
+        eq(input.slice().sort(compareNames), ["366日", "Bunny Girl", "WILL", "あいのうた", "ドライフラワー", "一輩子", "黃妃- 追追追"]);
+      },
+      "英文不分大小寫依 A-Z"() {
+        eq(["zoo", "Apple", "banana"].sort(compareNames), ["Apple", "banana", "zoo"]);
+      },
+      "數字依數值大小而非字元"() {
+        eq(["366日", "2 Lovers", "10 Years"].sort(compareNames), ["2 Lovers", "10 Years", "366日"]);
+      },
+      "假名依五十音、平假名片假名混排"() {
+        eq(["メリッサ", "かくしん", "アイドル", "さくら"].sort(compareNames), ["アイドル", "かくしん", "さくら", "メリッサ"]);
+      },
+      "漢字依筆劃由少到多"() {
+        eq(["愛", "王", "一", "張", "人"].sort(compareNames), ["一", "人", "王", "張", "愛"]);
+      },
+      "開頭的符號與全形字不影響分組"() {
+        eq(["「鳥の詩」", "Ａlpha", "(beta)"].sort(compareNames), ["Ａlpha", "(beta)", "「鳥の詩」"]);
+      },
+      "原始順序保持資料順序、不改動原陣列"() {
+        const before = names(songs);
+        eq(names(sortSongs(songs, SORT_ORIGINAL)), before);
+        eq(names(sortSongs(songs, SORT_NAME)), ["Just be friends", "ドライフラワー", "残酷な天使のテーゼ", "黃妃- 追追追", "楊丞琳- 理想情人"]);
+        eq(names(songs), before);
       },
 
       // ---------- 日曆 ----------

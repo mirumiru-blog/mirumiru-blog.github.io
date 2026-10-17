@@ -59,6 +59,48 @@ export function filterChips(songs) {
   return chips;
 }
 
+// ---------- 排序 ----------
+// 歌名排序分四組：數字 → 英文 A-Z → 日文假名（五十音）→ 漢字（筆劃少到多）
+export const SORT_NAME = "name";
+export const SORT_ORIGINAL = "original";
+
+const collators = {};
+function collator(locale) {
+  return (collators[locale] ??= new Intl.Collator(locale, { numeric: true, sensitivity: "base" }));
+}
+
+const GROUPS = [
+  { test: /^[0-9]/, locale: "en" },
+  { test: /^[a-z]/i, locale: "en" },
+  { test: /^[぀-ヿ]/, locale: "ja" },
+];
+const OTHER_GROUP = { locale: "zh-Hant-TW-u-co-stroke" };
+
+// 排序用的歌名：全形轉半形、去掉開頭的空白與符號（例如「(」「「」）
+function sortKey(name) {
+  return String(name).normalize("NFKC").replace(/^[\s\p{P}\p{S}]+/u, "");
+}
+
+function sortGroup(key) {
+  const index = GROUPS.findIndex((g) => g.test.test(key));
+  return index === -1 ? GROUPS.length : index;
+}
+
+export function compareNames(a, b) {
+  const ka = sortKey(a);
+  const kb = sortKey(b);
+  const ga = sortGroup(ka);
+  const gb = sortGroup(kb);
+  if (ga !== gb) return ga - gb;
+  const compare = collator((GROUPS[ga] ?? OTHER_GROUP).locale).compare;
+  return compare(ka, kb) || compare(a, b);
+}
+
+export function sortSongs(songs, mode = SORT_NAME) {
+  if (mode !== SORT_NAME) return songs.slice();
+  return songs.slice().sort((a, b) => compareNames(a.name, b.name));
+}
+
 // 歌曲資訊文字，例如「唱過 3 次 · 上次 2026/10/12」
 export function sungInfo(song) {
   if (!song.count || !song.lastSung) return "-";

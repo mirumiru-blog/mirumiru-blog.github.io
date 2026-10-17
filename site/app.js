@@ -1,10 +1,20 @@
-import { ALL, availableCategories, categoryTree, filterChips, filterSongs, listLanguages, sungInfo } from "./filter.js";
+import {
+  ALL,
+  SORT_NAME,
+  availableCategories,
+  categoryTree,
+  filterChips,
+  filterSongs,
+  listLanguages,
+  sortSongs,
+  sungInfo,
+} from "./filter.js";
 import { MONTH_NAMES, isoDate, monthGrid, shiftMonth, todayInTaipei } from "./calendar.js";
 import { countVisit } from "./counter.js";
 import { mountPlayer } from "./player.js";
 
 const $ = (id) => document.getElementById(id);
-const state = { query: "", language: ALL, category: ALL };
+const state = { query: "", language: ALL, category: ALL, sort: SORT_NAME };
 let songs = [];
 
 const today = todayInTaipei();
@@ -95,7 +105,7 @@ function render() {
   );
   renderTree();
 
-  const result = filterSongs(songs, state);
+  const result = sortSongs(filterSongs(songs, state), state.sort);
   $("count").textContent = `共 ${result.length} 首`;
   $("list").replaceChildren(...result.map(songItem));
   $("empty").hidden = result.length > 0;
@@ -172,6 +182,11 @@ $("cal-next").addEventListener("click", () => {
 $("today-label").textContent = `Today: ${isoDate(today).replaceAll("-", "/")}`;
 $("post-date").textContent = `${MONTH_NAMES[today.month - 1]} ${today.day}, ${today.year}`;
 renderCalendar();
+
+$("sort").addEventListener("change", (e) => {
+  state.sort = e.target.value;
+  render();
+});
 
 $("search").addEventListener("input", (e) => {
   state.query = e.target.value;

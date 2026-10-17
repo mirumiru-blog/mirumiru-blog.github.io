@@ -39,7 +39,15 @@
         </div>
         <div id="categories" class="chips" role="group" aria-label="語言與類別"></div>
 
-        <p id="count" class="count" aria-live="polite"></p>
+        <div class="list-head">
+          <label class="sort">排序
+            <select id="sort">
+              <option value="name">歌名（ABC・あいう・筆劃）</option>
+              <option value="original">原始順序</option>
+            </select>
+          </label>
+          <p id="count" class="count" aria-live="polite"></p>
+        </div>
         <ul id="list" class="list"></ul>
         <p id="empty" class="empty" hidden>找不到符合的歌曲，換個關鍵字試試看</p>
       </main>
