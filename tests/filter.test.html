@@ -351,6 +351,12 @@
       },
 
       // ---------- 網站設定檔 ----------
+      async "排序選單的預設選項是熱門排行"() {
+        const html = await (await fetch("../site/index.html", { cache: "no-store" })).text();
+        const select = new DOMParser().parseFromString(html, "text/html").getElementById("sort");
+        eq(select.value, SORT_COUNT);
+        eq(select.selectedOptions[0].textContent, "熱門排行");
+      },
       async "settings.json 格式正確且大頭貼存在"() {
         const settings = await (await fetch("../site/data/settings.json")).json();
         eq(typeof settings.owner.caption, "string");
