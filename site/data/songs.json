@@ -255,8 +255,8 @@
   "name": "マリーゴールド",
   "language": "日文",
   "category": "JPOP",
-  "count": 0,
-  "lastSung": null
+  "count": 1,
+  "lastSung": "2026-11-01"
  },
  {
   "name": "津軽海峡冬景色",
@@ -913,8 +913,8 @@
   "name": "旺福- 我當你空氣",
   "language": "中文",
   "category": "中文",
-  "count": 0,
-  "lastSung": null
+  "count": 1,
+  "lastSung": "2026-11-01"
  },
  {
   "name": "趙薇- 有一個姑娘",
@@ -969,8 +969,8 @@
   "name": "張惠妹- 連名帶姓",
   "language": "中文",
   "category": "中文",
-  "count": 0,
-  "lastSung": null
+  "count": 1,
+  "lastSung": "2026-11-01"
  },
  {
   "name": "芒果醬-我喜歡你",
@@ -1200,8 +1200,8 @@
   "name": "恋愛サーキュレーション",
   "language": "日文",
   "category": "動漫歌曲",
-  "count": 0,
-  "lastSung": null
+  "count": 1,
+  "lastSung": "2026-11-01"
  },
  {
   "name": "風になる",
@@ -1683,8 +1683,8 @@
   "name": "ハレ晴レユカイ",
   "language": "日文",
   "category": "動漫歌曲",
-  "count": 0,
-  "lastSung": null
+  "count": 1,
+  "lastSung": "2026-11-01"
  },
  {
   "name": "ケロッ！とマーチ",
@@ -1774,8 +1774,8 @@
   "name": "かくしん的☆めたまるふぉ〜ぜっ！",
   "language": "日文",
   "category": "動漫歌曲",
-  "count": 0,
-  "lastSung": null
+  "count": 1,
+  "lastSung": "2026-11-01"
  },
  {
   "name": "Sincerely",
@@ -1797,5 +1797,33 @@
   "category": "V家",
   "count": 1,
   "lastSung": "2026-10-21"
+ },
+ {
+  "name": "幸せ",
+  "language": "日文",
+  "category": "JPOP",
+  "count": 1,
+  "lastSung": "2026-11-01"
+ },
+ {
+  "name": "ルカルカ★ナイトフィーバー",
+  "language": "日文",
+  "category": "V家",
+  "count": 1,
+  "lastSung": "2026-11-01"
+ },
+ {
+  "name": "オリオンをなぞる",
+  "language": "日文",
+  "category": "動漫歌曲",
+  "count": 1,
+  "lastSung": "2026-11-01"
+ },
+ {
+  "name": "蔡依林- 倒帶",
+  "language": "中文",
+  "category": "中文",
+  "count": 1,
+  "lastSung": "2026-11-01"
  }
 ]
