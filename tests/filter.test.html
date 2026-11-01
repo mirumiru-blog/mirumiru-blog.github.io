@@ -12,7 +12,7 @@
   <h1 id="summary">執行中…</h1>
   <ul id="results"></ul>
   <script type="module">
-    import { SORT_NAME, SORT_ORIGINAL, compareNames, sortSongs } from "../site/filter.js";
+    import { SORT_COUNT, SORT_NAME, SORT_ORIGINAL, compareNames, sortSongs } from "../site/filter.js";
     import { ALL, availableCategories, categoryTree, filterChips, filterSongs, listLanguages, normalizeText, sungInfo } from "../site/filter.js";
     import { isoDate, monthGrid, shiftMonth, todayInTaipei } from "../site/calendar.js";
     import { countVisit, namespaceFor } from "../site/counter.js";
@@ -175,6 +175,21 @@
       },
       "開頭的符號與全形字不影響分組"() {
         eq(["「鳥の詩」", "Ａlpha", "(beta)"].sort(compareNames), ["Ａlpha", "(beta)", "「鳥の詩」"]);
+      },
+      "次數排序：唱過多的在前，同次數時最近唱的在前，再依歌名"() {
+        const input = [
+          { name: "沒唱過B", count: 0, lastSung: null },
+          { name: "唱一次舊", count: 1, lastSung: "2026-10-21" },
+          { name: "Apple", count: 0, lastSung: null },
+          { name: "唱三次", count: 3, lastSung: "2026-10-21" },
+          { name: "唱一次新", count: 1, lastSung: "2026-11-01" },
+        ];
+        eq(names(sortSongs(input, SORT_COUNT)), ["唱三次", "唱一次新", "唱一次舊", "Apple", "沒唱過B"]);
+      },
+      "沒有指定排序時預設依次數，且不改動原陣列"() {
+        const input = [{ name: "少", count: 1, lastSung: "2026-10-21" }, { name: "多", count: 2, lastSung: "2026-10-21" }];
+        eq(names(sortSongs(input)), ["多", "少"]);
+        eq(names(input), ["少", "多"]);
       },
       "原始順序保持資料順序、不改動原陣列"() {
         const before = names(songs);

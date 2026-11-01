@@ -1,6 +1,6 @@
 import {
   ALL,
-  SORT_NAME,
+  SORT_COUNT,
   availableCategories,
   categoryTree,
   filterChips,
@@ -14,7 +14,7 @@ import { countVisit } from "./counter.js";
 import { mountPlayer } from "./player.js";
 
 const $ = (id) => document.getElementById(id);
-const state = { query: "", language: ALL, category: ALL, sort: SORT_NAME };
+const state = { query: "", language: ALL, category: ALL, sort: SORT_COUNT };
 let songs = [];
 
 const today = todayInTaipei();

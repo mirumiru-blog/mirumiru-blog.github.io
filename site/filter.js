@@ -61,6 +61,8 @@ export function filterChips(songs) {
 
 // ---------- 排序 ----------
 // 歌名排序分四組：數字 → 英文 A-Z → 日文假名（五十音）→ 漢字（筆劃少到多）
+// 次數排序：唱過次數多到少，同次數時最近唱過的在前，再依歌名
+export const SORT_COUNT = "count";
 export const SORT_NAME = "name";
 export const SORT_ORIGINAL = "original";
 
@@ -96,9 +98,18 @@ export function compareNames(a, b) {
   return compare(ka, kb) || compare(a, b);
 }
 
-export function sortSongs(songs, mode = SORT_NAME) {
-  if (mode !== SORT_NAME) return songs.slice();
-  return songs.slice().sort((a, b) => compareNames(a.name, b.name));
+function compareCounts(a, b) {
+  return (
+    (b.count ?? 0) - (a.count ?? 0) ||
+    (b.lastSung ?? "").localeCompare(a.lastSung ?? "") ||
+    compareNames(a.name, b.name)
+  );
+}
+
+export function sortSongs(songs, mode = SORT_COUNT) {
+  if (mode === SORT_COUNT) return songs.slice().sort(compareCounts);
+  if (mode === SORT_NAME) return songs.slice().sort((a, b) => compareNames(a.name, b.name));
+  return songs.slice();
 }
 
 // 歌曲資訊文字，例如「唱過 3 次 · 上次 2026/10/12」
