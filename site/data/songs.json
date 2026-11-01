@@ -17,8 +17,8 @@
   "name": "366日",
   "language": "日文",
   "category": "JPOP",
-  "count": 0,
-  "lastSung": null
+  "count": 1,
+  "lastSung": "2026-10-21"
  },
  {
   "name": "変わらないもの",
@@ -171,8 +171,8 @@
   "name": "相思相愛",
   "language": "日文",
   "category": "JPOP",
-  "count": 0,
-  "lastSung": null
+  "count": 1,
+  "lastSung": "2026-10-21"
  },
  {
   "name": "Pretender",
@@ -199,8 +199,8 @@
   "name": "I LOVE YOU / クリス・ハー",
   "language": "日文",
   "category": "JPOP",
-  "count": 0,
-  "lastSung": null
+  "count": 1,
+  "lastSung": "2026-10-21"
  },
  {
   "name": "椎名林檎 - ギブス",
@@ -1319,8 +1319,8 @@
   "name": "渡月橋 ～君想ふ～",
   "language": "日文",
   "category": "動漫歌曲",
-  "count": 0,
-  "lastSung": null
+  "count": 1,
+  "lastSung": "2026-10-21"
  },
  {
   "name": "殘響散歌",
@@ -1767,8 +1767,8 @@
   "name": "シュガーソングとビターステップ",
   "language": "日文",
   "category": "動漫歌曲",
-  "count": 0,
-  "lastSung": null
+  "count": 1,
+  "lastSung": "2026-10-21"
  },
  {
   "name": "かくしん的☆めたまるふぉ〜ぜっ！",
@@ -1783,5 +1783,19 @@
   "category": "動漫歌曲",
   "count": 0,
   "lastSung": null
+ },
+ {
+  "name": "W / X / Y",
+  "language": "日文",
+  "category": "JPOP",
+  "count": 1,
+  "lastSung": "2026-10-21"
+ },
+ {
+  "name": "夜もすがら君想ふ",
+  "language": "日文",
+  "category": "V家",
+  "count": 1,
+  "lastSung": "2026-10-21"
  }
 ]
