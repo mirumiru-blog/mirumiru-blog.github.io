@@ -752,8 +752,8 @@
   "name": "鄧麗君- 月亮代表我的心",
   "language": "中文",
   "category": "中文",
-  "count": 0,
-  "lastSung": null
+  "count": 1,
+  "lastSung": "2026-11-11"
  },
  {
   "name": "王心凌- 月光",
@@ -787,8 +787,8 @@
   "name": "孫燕姿- 逆光",
   "language": "中文",
   "category": "中文",
-  "count": 0,
-  "lastSung": null
+  "count": 1,
+  "lastSung": "2026-11-11"
  },
  {
   "name": "孫燕姿- 我懷念的",
@@ -1144,8 +1144,8 @@
   "name": "君の知らない物語",
   "language": "日文",
   "category": "動漫歌曲",
-  "count": 0,
-  "lastSung": null
+  "count": 1,
+  "lastSung": "2026-11-11"
  },
  {
   "name": "プラチナ",
@@ -1291,8 +1291,8 @@
   "name": "シルエット",
   "language": "日文",
   "category": "動漫歌曲",
-  "count": 0,
-  "lastSung": null
+  "count": 1,
+  "lastSung": "2026-11-11"
  },
  {
   "name": "無敵鐵金剛",
@@ -1825,5 +1825,68 @@
   "category": "中文",
   "count": 1,
   "lastSung": "2026-11-01"
+ },
+ {
+  "name": "雨夜花",
+  "language": "台語",
+  "category": "台語",
+  "count": 1,
+  "lastSung": "2026-11-11"
+ },
+ {
+  "name": "楊丞琳- 雨愛",
+  "language": "中文",
+  "category": "中文",
+  "count": 1,
+  "lastSung": "2026-11-11"
+ },
+ {
+  "name": "レイン / シド",
+  "language": "日文",
+  "category": "動漫歌曲",
+  "count": 1,
+  "lastSung": "2026-11-11"
+ },
+ {
+  "name": "梁靜茹- 崇拜",
+  "language": "中文",
+  "category": "中文",
+  "count": 1,
+  "lastSung": "2026-11-11"
+ },
+ {
+  "name": "First Love",
+  "language": "日文",
+  "category": "JPOP",
+  "count": 1,
+  "lastSung": "2026-11-11"
+ },
+ {
+  "name": "周杰倫- 可愛女人",
+  "language": "中文",
+  "category": "中文",
+  "count": 1,
+  "lastSung": "2026-11-11"
+ },
+ {
+  "name": "Catch You Catch Me",
+  "language": "日文",
+  "category": "動漫歌曲",
+  "count": 1,
+  "lastSung": "2026-11-11"
+ },
+ {
+  "name": "踊り子",
+  "language": "日文",
+  "category": "JPOP",
+  "count": 1,
+  "lastSung": "2026-11-11"
+ },
+ {
+  "name": "死ぬのがいいわ",
+  "language": "日文",
+  "category": "JPOP",
+  "count": 1,
+  "lastSung": "2026-11-11"
  }
 ]
